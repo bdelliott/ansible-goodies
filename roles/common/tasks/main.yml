@@ -1,0 +1,26 @@
+---
+
+- name: set hostname
+  hostname: name={{ ansible_hostname }}
+
+- name: get aptitude so upgrade will work
+  apt: update_cache=yes name=aptitude
+
+- name: apt upgrade
+  apt: upgrade=yes update_cache=no
+
+- name: apt install common packages
+  apt: name={{ item }} state=present
+  with_items: packages
+
+- name: create nonprivileged user
+  user: name="{{ username }}" shell="/bin/bash"
+
+- name: add authorized key to user
+  authorized_key: user="{{ username }}"
+                  key="{{ pubkey }}"
+
+- name: give user sudo power
+  template: src="sudoers.j2"
+            dest="/etc/sudoers.d/sudoers"
+            mode=0440 owner=root group=root

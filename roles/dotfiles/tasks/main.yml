@@ -1,0 +1,11 @@
+---
+
+- name: personalize shell
+  git: dest="{{ ansible_env.HOME }}/dotfiles"
+       accept_hostkey=yes
+       repo="git@github.com:bdelliott/dotfiles.git"
+
+- name: setup dotfiles
+  command: ./setup
+  args:
+    chdir: dotfiles/

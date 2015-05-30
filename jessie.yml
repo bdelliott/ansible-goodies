@@ -1,0 +1,26 @@
+---
+
+# Set up a remote Debian Jessie server 
+
+- hosts: all
+  remote_user: root
+  roles:
+    - common
+  vars_files:
+    - vars.yml
+
+# continue config as nonprivileged user:
+- hosts: all
+  roles:
+    - keysetup
+    - dotfiles
+  vars_files:
+    - vars.yml
+
+# make environment more pythonic
+- hosts: all
+  sudo: yes
+  roles:
+    - python
+  vars_files:
+    - vars.yml

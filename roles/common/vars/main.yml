@@ -1,0 +1,8 @@
+---
+packages:
+  - sudo
+  - vim
+  - git
+  - python-pip
+  - gcc
+  - python-dev
