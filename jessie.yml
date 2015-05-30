@@ -1,6 +1,7 @@
 ---
 
 # Set up a remote Debian Jessie server 
+# Run me with: ansible-playbook -vv -i "<hostname>," jessie.yml
 
 - hosts: all
   remote_user: root
