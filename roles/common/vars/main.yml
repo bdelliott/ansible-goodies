@@ -1,8 +1,10 @@
 ---
 packages:
-  - sudo
-  - vim
-  - git
-  - python-pip
+  - ack-grep
   - gcc
+  - git
+  - vim
+  - python-pip
   - python-dev
+  - sudo
+  - tmux

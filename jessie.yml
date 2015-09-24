@@ -15,10 +15,10 @@
   roles:
     - keysetup
     - dotfiles
+    - git
   vars_files:
     - vars.yml
 
-# make environment more pythonic
 - hosts: all
   sudo: yes
   roles:
