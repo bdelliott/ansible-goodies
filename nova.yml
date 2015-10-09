@@ -19,6 +19,7 @@
         - libxml2-dev
         - libxslt1-dev
         - openssl
+        - libpq-dev
 
     - set_fact: home="{{ ansible_user_dir }}"
 
