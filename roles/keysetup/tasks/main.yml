@@ -4,17 +4,7 @@
         state=directory
         mode=0700
 
-- name: copy priv key
-  copy: src="{{ local_home }}/.ssh/{{ keyfile }}"
-        dest="{{ ansible_env.HOME }}/.ssh/id_{{ keytype }}"
-        mode=0600
-
-- name: copy pub key
-  copy: src="{{ local_home }}/.ssh/{{ keyfile }}.pub"
-        dest="{{ ansible_env.HOME }}/.ssh/id_{{ keytype }}.pub"
-        mode=0600
- 
 - name: authorize personal key
-  copy: src="{{ local_home }}/.ssh/id_dsa.pub"
+  copy: src="{{ local_home }}/.ssh/id_rsa.pub"
         dest="{{ ansible_env.HOME }}/.ssh/authorized_keys"
         mode=0644

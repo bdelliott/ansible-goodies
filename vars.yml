@@ -6,10 +6,10 @@ local_home: "/Users/{{ local_user }}"
 username: "{{ local_user }}"
 
 # key stuff
-keyfile: id_dsa
+keyfile: id_rsa
 privkeyfile: "{{ local_home }}/.ssh/{{ keyfile }}"
 pubkeyfile: "{{ privkeyfile }}.pub"
-pubkey: "{{ lookup('file', '/Users/bde/.ssh/id_dsa.pub') }} "
+pubkey: "{{ lookup('file', '/Users/bde/.ssh/id_rsa.pub') }} "
 
 # git config
 git_name: "Brian Elliott"
