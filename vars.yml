@@ -1,16 +1,16 @@
 ---
 # common vars
-local_user: bde
+local_user: bria4812
 local_home: "/Users/{{ local_user }}"
 
-username: "{{ local_user }}"
+remote_username: bde
 
 # key stuff
 keyfile: id_rsa
 privkeyfile: "{{ local_home }}/.ssh/{{ keyfile }}"
 pubkeyfile: "{{ privkeyfile }}.pub"
-pubkey: "{{ lookup('file', '/Users/bde/.ssh/id_rsa.pub') }} "
+pubkey: "{{ lookup('file', '/Users/bria4812/.ssh/id_rsa.pub') }} "
 
 # git config
 git_name: "Brian Elliott"
-git_email: "bdelliott@gmail.com"
+git_email: "bdelliott@protonmail.com"

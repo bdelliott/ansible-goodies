@@ -1,8 +1,10 @@
 ---
 
-# Set up a remote Debian Jessie server 
-# Run me with: ansible-playbook -vv -i "<hostname>," jessie.yml
-
+# Set up a remote cloud server
+# Run me with: ansible-playbook -vv -i "<hostname>," server.yml
+#
+# Tested on Ubuntu 16.04 LTS with Ansible 2.5.3
+#
 - hosts: all
   remote_user: root
   roles:
@@ -12,6 +14,7 @@
 
 # continue config as nonprivileged user:
 - hosts: all
+  remote_user: "{{ remote_username }}"
   roles:
     - keysetup
     - dotfiles
@@ -20,7 +23,7 @@
     - vars.yml
 
 - hosts: all
-  sudo: yes
+  become: yes
   roles:
     - python
   vars_files:
