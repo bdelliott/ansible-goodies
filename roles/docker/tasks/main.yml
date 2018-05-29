@@ -1,0 +1,28 @@
+---
+
+# Translated from:
+# https://docs.docker.com/install/linux/docker-ce/ubuntu/#set-up-the-repository
+#
+- name: apt install pre-requisite packages
+  apt: name={{ item }} state=present
+  loop: "{{ prerequisites }}"
+
+- name: add Docker GPG key to apt
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    id: 0EBFCD88
+    state: present
+
+- name: add Docker repository
+  apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable
+    state: present
+
+- name: Install Docker commmunity edition
+  apt:
+    name: docker-ce
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Test installation
+  command: docker run --rm hello-world 

@@ -1,0 +1,32 @@
+---
+
+# Set up a kubernetes cluster
+# Run me with: ansible-playbook -vv kube.yml
+#
+# Tested on Ubuntu 16.04 LTS with Ansible 2.5.3
+#
+- hosts: all
+  remote_user: root
+  roles:
+    - common
+  vars_files:
+    - vars.yml
+
+# continue config as nonprivileged user:
+- hosts: all
+  remote_user: "{{ remote_username }}"
+  roles:
+    - keysetup
+    - dotfiles
+    - git
+  vars_files:
+    - vars.yml
+
+- hosts: kubernetes
+  remote_user: "{{ remote_username }}"
+  become: yes
+  roles:
+    - docker
+    - kubernetes
+  vars_files:
+    - vars.yml
