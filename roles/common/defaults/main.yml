@@ -1,0 +1,4 @@
+---
+
+# can also set to `dist` for dist-upgrade:
+apt_upgrade_type: yes

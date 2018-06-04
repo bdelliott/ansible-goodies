@@ -7,8 +7,7 @@
   apt: update_cache=yes name=aptitude
 
 - name: apt upgrade
-  apt: upgrade=yes update_cache=no
-
+  apt: "upgrade={{ apt_upgrade_type }} update_cache=no"
 
 - name: apt install common packages
   apt: name={{ item }} state=present
@@ -25,3 +24,10 @@
   template: src="sudoers.j2"
             dest="/etc/sudoers.d/sudoers"
             mode=0440 owner=root group=root
+
+- name: Reboot system if required
+  command: shutdown -r now 'Rebooting to complete system upgrade'
+          removes=/var/run/reboot-required
+
+- name: Wait for SSH accessibility
+  wait_for_connection:
