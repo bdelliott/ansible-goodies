@@ -1,0 +1,143 @@
+---
+
+# Playbook to ready an RPC-O lab environment
+# Run me with: ansible-playbook -vv rpco-setup.yml
+#
+# Tested on Ubuntu 16.04 LTS with Ansible 2.5.3
+#
+- hosts: rpco
+  remote_user: root
+  tasks:
+    - include_role:
+        name: common
+      vars:
+        apt_upgrade_type: dist
+
+  vars_files:
+    - vars.yml
+
+# continue config as nonprivileged user:
+- hosts: rpco
+  remote_user: "{{ remote_username }}"
+  gather_facts: yes
+  tags:
+    - personalize
+  tasks:
+    - include_role: name=keysetup
+    - include_role: name=dotfiles
+    - include_role: name=git
+  vars_files:
+    - vars.yml
+
+# host preparation
+- hosts: rpco
+  remote_user: root
+  gather_facts: no
+  vars:
+    - modules:
+        - bonding
+        - 8021q
+  tasks:
+    - name: install additional packages
+      apt: name={{ item }} state=present
+      loop:
+        - aptitude
+        - bridge-utils
+        - build-essential
+        - debootstrap
+        - git
+        - ifenslave
+        - ifenslave-2.6
+        - lsof
+        - lvm2
+        - ntp
+        - ntpdate
+        - openssh-server
+        - python-dev
+        - sudo
+        - tcpdump
+        - vlan
+        - python
+
+    - name: add modules
+      command: "modprobe {{ item }}"
+      loop: "{{ modules }}"
+
+    - name: add modules on boot
+      lineinfile:
+        path: /etc/modules
+        line: "{{ item }}"
+      loop: "{{ modules }}"
+
+    - service:
+        name: ntp
+        state: restarted
+
+    - name: confirm ntp is functioning
+      command: ntpq -p
+
+# setup storage host
+- hosts: rpcostorage
+  remote_user: root
+  gather_facts: no
+  tasks:
+    - name: create LVM volume group for cinder
+      lvg:
+        vg: cinder-volumes
+        pvs: /dev/xvdb
+        pv_options: "--metadatasize 2048"
+
+# build unicast vxlan tunnels to create additional networks on top of public cloud that can be used
+# for an rpc-o deployment.  (eth0 is assumed to be rackspace public net)
+- hosts: rpco
+  remote_user: root
+  gather_facts: true
+  tags:
+    - vxlan
+  tasks:
+    - include_role:
+        name: rpco-vxlan-interface
+      vars:
+        bridge_name: br-mgmt
+        vxlan_interface: vxlan-container
+        vxlan_id: 1
+        # make a list of the vxlan endpoint ids (VTEPs) for the tunnel, leaving out the current machine's IP
+        vxlan_endpoint_ips: "{{ groups['rpco'] | map('extract', hostvars, 'ansible_default_ipv4') | map(attribute='address') | reject('equalto', ansible_default_ipv4.address) | list }}"
+        vxlan_overlay_ip: "{{ container_network_ip }}"
+        vxlan_overlay_netmask: 255.255.252.0
+        nameservers: true
+
+    - include_role:
+        name: rpco-vxlan-interface
+      vars:
+        bridge_name: br-tunnel
+        vxlan_interface: vxlan-tunnel
+        vxlan_id: 2
+        # make a list of the vxlan endpoint ids (VTEPs) for the tunnel, leaving out the current machine's IP
+        vxlan_endpoint_ips: "{{ groups['rpco'] | map('extract', hostvars, 'ansible_default_ipv4') | map(attribute='address') | reject('equalto', ansible_default_ipv4.address) | list }}"
+        vxlan_overlay_ip: "{{ tunnel_network_ip }}"
+        vxlan_overlay_netmask: 255.255.252.0
+        nameservers: false
+
+    - include_role:
+        name: rpco-vxlan-interface
+      vars:
+        bridge_name: br-storage
+        vxlan_interface: vxlan-storage
+        vxlan_id: 3
+        # make a list of the vxlan endpoint ids (VTEPs) for the tunnel, leaving out the current machine's IP
+        vxlan_endpoint_ips: "{{ groups['rpco'] | map('extract', hostvars, 'ansible_default_ipv4') | map(attribute='address') | reject('equalto', ansible_default_ipv4.address) | list }}"
+        vxlan_overlay_ip: "{{ storage_network_ip }}"
+        vxlan_overlay_netmask: 255.255.252.0
+        nameservers: false
+
+# generate the openstack user config file
+- hosts: rpcodeploy
+  remote_user: root
+  gather_facts: false
+  tags:
+    - userconfig
+  tasks:
+    - include_role:
+        name: rpco-user-config
+

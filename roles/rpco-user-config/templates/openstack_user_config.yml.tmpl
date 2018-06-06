@@ -1,0 +1,119 @@
+---
+cidr_networks:
+  container: 172.29.236.0/22
+  tunnel: 172.29.240.0/22
+  storage: 172.29.244.0/22
+
+used_ips:
+  - "172.29.236.1,172.29.236.10"
+  - "172.29.240.1,172.29.240.10"
+  - "172.29.244.1,172.29.244.10"
+
+global_overrides:
+  internal_lb_vip_address: 172.29.236.100
+  external_lb_vip_address: {{ ansible_default_ipv4.address }}
+  management_bridge: br-mgmt
+  tunnel_bridge: br-vxlan
+
+  provider_networks:
+    # container network
+    - network:
+        group_binds:
+          - all_containers
+          - hosts
+        type: raw
+        container_bridge: br-mgmt
+        container_type: veth
+        container_interface: eth1
+        ip_from_q: container
+        is_container_address: true
+        is_ssh_address: true
+
+    # tunnel network
+    - network:
+        group_binds:
+          - neutron_linuxbridge_agent
+        type: vxlan
+        container_bridge: br-vxlan
+        container_type: veth
+        container_interface: eth10
+        ip_from_q: tunnel
+        range: "1:1000"
+        net_name: vxlan
+
+    # storage network
+    - network:
+        group_binds:
+          - all_containers
+          - hosts
+        type: raw
+        container_bridge: br-storage
+        container_type: veth
+        container_interface: eth2
+        ip_from_q: storage
+
+shared-infra_hosts:
+    rpcoinfra1:
+      ip: 104.130.172.163
+
+    rpcoinfra2:
+      ip: 172.99.67.214
+
+    rpcoinfra3:
+      ip: 172.99.68.227
+
+repo-infra_hosts:
+    rpcoinfra1:
+      ip: 104.130.172.163
+
+    rpcoinfra2:
+      ip: 172.99.67.214
+
+    rpcoinfra3:
+      ip: 172.99.68.227
+
+os-infra_hosts:
+    rpcoinfra1:
+      ip: 104.130.172.163
+
+    rpcoinfra2:
+      ip: 172.99.67.214
+
+    rpcoinfra3:
+      ip: 172.99.68.227
+
+identity_hosts:
+    rpcoinfra1:
+      ip: 104.130.172.163
+
+    rpcoinfra2:
+      ip: 172.99.67.214
+
+    rpcoinfra3:
+      ip: 172.99.68.227
+
+network_hosts:
+    rpcoinfra1:
+      ip: 104.130.172.163
+
+    rpcoinfra2:
+      ip: 172.99.67.214
+
+    rpcoinfra3:
+      ip: 172.99.68.227
+
+compute_hosts:
+    rpcocompute1:
+      ip: 162.209.96.21
+
+    rpcocompute2:
+      ip: 162.209.96.23
+
+storage_hosts:
+    rpcostorage1:
+      ip: 162.209.96.27
+
+log_hosts:
+    rpcologging1:
+      ip: 172.99.68.247
+

@@ -1,0 +1,9 @@
+---
+
+- name: create openstack user config yaml
+  template:
+    src: openstack_user_config.yml.tmpl
+    dest: /etc/openstack_deploy/openstack_user_config.yml
+    mode: 0644
+    owner: root
+    group: root

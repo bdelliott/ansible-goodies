@@ -1,0 +1,11 @@
+auto {{ bridge_name }}
+iface {{ bridge_name }} inet static
+    bridge_stp off
+    bridge_waitport 0
+    bridge_fd 0
+    bridge_ports {{ vxlan_interface }}
+    address {{ vxlan_overlay_ip }}
+    netmask {{ vxlan_overlay_netmask }}
+    {% if nameservers %}
+        dns-nameservers 8.8.8.8 8.8.4.4
+    {% endif %}

@@ -1,0 +1,45 @@
+---
+
+- name: create vxlan tunnel endpoint
+  template:
+    src: vxlan-interface.tmpl
+    dest: /etc/network/interfaces.d/{{ vxlan_interface }}
+    mode: 0644
+    owner: root
+    group: root
+  register: vxlan_intf
+
+- name: source the new interface
+  lineinfile:
+    path: /etc/network/interfaces
+    line: 'source interfaces.d/{{ vxlan_interface }}'
+
+- name: add the bridge that the interface connects into
+  template:
+    src: bridge.tmpl
+    dest: /etc/network/interfaces.d/{{ bridge_name }}
+    mode: 0644
+    owner: root
+    group: root
+  register: bridge_intf
+
+- name: source the new interface
+  lineinfile:
+    path: /etc/network/interfaces
+    line: 'source interfaces.d/{{ bridge_name }}'
+
+- name: bring down interface if the config changed
+  command: "/sbin/ifdown {{ vxlan_interface }}"
+  when: (vxlan_intf.changed or bridge_intf.changed)
+
+- name: bring down interface if the config changed
+  command: "/sbin/ifdown {{ bridge_name }}"
+  when: (vxlan_intf.changed or bridge_intf.changed)
+
+- name: ensure interface is up
+  command: "/sbin/ifup {{ vxlan_interface }}"
+
+- name: ensure interface is up
+  command: "/sbin/ifup {{ bridge_name }}"
+
+
