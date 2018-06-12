@@ -11,9 +11,9 @@ used_ips:
 
 global_overrides:
   internal_lb_vip_address: 172.29.236.100
-  external_lb_vip_address: {{ ansible_default_ipv4.address }}
+  external_lb_vip_address: 172.29.236.100
   management_bridge: br-mgmt
-  tunnel_bridge: br-vxlan
+  tunnel_bridge: br-tunnel
 
   provider_networks:
     # container network
@@ -34,7 +34,7 @@ global_overrides:
         group_binds:
           - neutron_linuxbridge_agent
         type: vxlan
-        container_bridge: br-vxlan
+        container_bridge: br-tunnel
         container_type: veth
         container_interface: eth10
         ip_from_q: tunnel
@@ -116,4 +116,15 @@ storage_hosts:
 log_hosts:
     rpcologging1:
       ip: 172.99.68.247
+
+haproxy_hosts:
+    rpcoinfra1:
+      ip: 104.130.172.163
+
+    rpcoinfra2:
+      ip: 172.99.67.214
+
+    rpcoinfra3:
+      ip: 172.99.68.227
+
 
