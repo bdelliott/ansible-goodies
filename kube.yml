@@ -1,12 +1,13 @@
 ---
 
 # Set up a kubernetes cluster
-# Run me with: ansible-playbook -vv kube.yml
+# Run me with: ansible-playbook -vv kube.yml -l <hostpattern>
 #
 # Tested on Ubuntu 16.04 LTS with Ansible 2.5.3
 #
 - hosts: all
-  remote_user: root
+  remote_user: "{{ initial_username }}"
+  become: yes
   roles:
     - common
   vars_files:
@@ -22,7 +23,7 @@
   vars_files:
     - vars.yml
 
-- hosts: kubernetes
+- hosts: all
   remote_user: "{{ remote_username }}"
   become: yes
   roles:

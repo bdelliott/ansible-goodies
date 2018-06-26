@@ -3,6 +3,7 @@
 local_user: bria4812
 local_home: "/Users/{{ local_user }}"
 
+initial_username: root
 remote_username: bde
 
 # key stuff
