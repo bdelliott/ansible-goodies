@@ -3,8 +3,7 @@ packages:
   - ack-grep
   - gcc
   - git
+  - python3-pip
   - vim
-  - python-pip
-  - python-dev
   - sudo
   - tmux

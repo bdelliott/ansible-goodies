@@ -26,8 +26,14 @@
             mode=0440 owner=root group=root
 
 - name: Reboot system if required
-  command: shutdown -r now 'Rebooting to complete system upgrade'
-          removes=/var/run/reboot-required
+  shell: sleep 5 && shutdown -r now 'Rebooting to complete system upgrade'
+         removes=/var/run/reboot-required
+  async: 1
+  poll: 0
+  ignore_errors: yes
+  register: restarted
 
 - name: Wait for SSH accessibility
   wait_for_connection:
+    connect_timeout: 15
+  when: restarted.changed
